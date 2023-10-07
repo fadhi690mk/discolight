@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.5s ease;
+    }
+
+    #speedControl {
+      margin-top: 20px;
+      width: 300px;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 20px;
+      outline: none;
+      padding: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s ease;
+    }
+
+    #speedControl:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    #speedControl::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #4CAF50;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    #speedControl::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #4CAF50;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+
+  <!-- iOS meta tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="disco">
+
+  <title>disco</title>
+  <script src="service-worker.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(function(registration) {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(function(error) {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
+  </script>
+  
+</head>
+<body>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const speedControl = document.getElementById('speedControl');
+      const body = document.body;
+
+      let speed = 500; // Default speed in milliseconds
+      let intervalId;
+
+      function changeColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        body.style.backgroundColor = color;
+      }
+
+      function startColorChange() {
+        stopColorChange();
+        intervalId = setInterval(changeColor, speed);
+      }
+
+      function stopColorChange() {
+        clearInterval(intervalId);
+      }
+
+      speedControl.addEventListener('input', function() {
+        speed = 1000 - parseInt(speedControl.value); // Invert the value to make lower values mean faster speed
+        startColorChange();
+      });
+
+      startColorChange(); // Start color change initially
+    });
+  </script>
+
+  <input type="range" id="speedControl" min="1" max="1000" value="500">
+</body>
+</html>
